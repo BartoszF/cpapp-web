@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
-import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import styled from "styled-components";
+import UserService from "../../service/UserService";
+import { ACCESS_TOKEN } from '../../constants';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -33,25 +30,50 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const ErrorDiv = styled.div`
+  background-color: rgba(255, 35, 35, 0.5);
+  border: 1px solid rgba(195, 10, 10, 0.9);
+  padding: 5px;
+  font-size: 12px;
+`;
+
+
 export default function InitPage(props) {
   const classes = useStyles();
-  //const [count, setCount] = useState(0);
-  console.log(props);
 
   useEffect(() => {
-    //document.title = `Kliknięto ${count} razy`;
-  });
+    if (localStorage.getItem("ACCESS_TOKEN")) {
+      props.history.push("/main");
+    }
+  })
 
-  const login = (e) => {
-    if(e) e.preventDefault();
-    console.log(e);
-  }
+  let [error, setError] = useState(null);
+
+  const login = e => {
+    if (e) e.preventDefault();
+    const data = new FormData(e.target);
+    let body = { number: data.get("phoneNumber"), pin: data.get("pin") };
+    UserService.login(body)
+      .then(response => {
+        localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+        props.history.push("/main");
+      })
+      .catch(err => {
+        console.error(err);
+        setError("Wrong credentials or number doesn't exists");
+      });
+  };
+
+  const errorDiv = () => {
+    if (error) return <ErrorDiv>{error}</ErrorDiv>;
+  };
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <form className={classes.form} onSubmit={login} noValidate>
+          {errorDiv()}
           <TextField
             variant="outlined"
             margin="normal"
