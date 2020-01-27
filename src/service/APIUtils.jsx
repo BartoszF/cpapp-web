@@ -6,7 +6,7 @@ export async function request(options) {
   });
 
 
-  if (localStorage.getItem("ACCESS_TOKEN")) {
+  if (localStorage.getItem(ACCESS_TOKEN)) {
     headers.append('Authorization', `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`);
   }
 

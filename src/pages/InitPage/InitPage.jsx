@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
 import styled from "styled-components";
 import UserService from "../../service/UserService";
-import { ACCESS_TOKEN } from '../../constants';
+import { ACCESS_TOKEN } from "../../constants";
+
+import { observer } from "mobx-react";
+import useStores from "../../useStores";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -37,15 +38,16 @@ const ErrorDiv = styled.div`
   font-size: 12px;
 `;
 
-
-export default function InitPage(props) {
+const InitPage = observer(props => {
   const classes = useStyles();
 
+  const { userStore } = useStores();
+
   useEffect(() => {
-    if (localStorage.getItem("ACCESS_TOKEN")) {
+    if (localStorage.getItem(ACCESS_TOKEN)) {
       props.history.push("/main");
     }
-  })
+  });
 
   let [error, setError] = useState(null);
 
@@ -56,6 +58,7 @@ export default function InitPage(props) {
     UserService.login(body)
       .then(response => {
         localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+        userStore.getUserData();
         props.history.push("/main");
       })
       .catch(err => {
@@ -69,51 +72,50 @@ export default function InitPage(props) {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <form className={classes.form} onSubmit={login} noValidate>
-          {errorDiv()}
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="phoneNumber"
-            label="Twój numer"
-            name="phoneNumber"
-            type="number"
-            autoComplete="phoneNumber"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="pin"
-            label="Pin"
-            type="password"
-            id="pin"
-          />
-          <Button
-            className={classes.submit}
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-          >
-            Zaloguj się
-          </Button>
-          <Grid container>
-            <Grid item>
-              <Link href="/createAccount" variant="body2">
-                {"Nie masz numeru?"}
-              </Link>
-            </Grid>
+    <div className={classes.paper}>
+      <form className={classes.form} onSubmit={login} noValidate>
+        {errorDiv()}
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          id="phoneNumber"
+          label="Twój numer"
+          name="phoneNumber"
+          type="number"
+          autoComplete="phoneNumber"
+          autoFocus
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          name="pin"
+          label="Pin"
+          type="password"
+          id="pin"
+        />
+        <Button
+          className={classes.submit}
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+        >
+          Zaloguj się
+        </Button>
+        <Grid container>
+          <Grid item>
+            <Link href="/createAccount" variant="body2">
+              {"Nie masz numeru?"}
+            </Link>
           </Grid>
-        </form>
-      </div>
-    </Container>
+        </Grid>
+      </form>
+    </div>
   );
-}
+});
+
+export default InitPage;

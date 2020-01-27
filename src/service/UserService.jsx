@@ -29,12 +29,46 @@ const UserService = {
     });
   },
 
+  getAllUsers() {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
+      return Promise.reject('No access token set.');
+    }
+
+    return request({
+      url: '/user/',
+      method: 'GET',
+    });
+  },
+
   getUserProfile(username) {
     return request({
       url: `/users/${username}`,
       method: 'GET',
     });
   },
+
+  addContact(contactNumber) {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
+      return Promise.reject('No access token set.');
+    }
+
+    return request({
+      url: '/user/me/contact',
+      method: 'POST',
+      body: JSON.stringify({contactNumber: contactNumber}),
+    });
+  },
+
+  getConversations() {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
+      return Promise.reject('No access token set.');
+    }
+
+    return request({
+      url: '/user/me/conversations',
+      method: 'GET',
+    });
+  }
 };
 
 export default UserService;
