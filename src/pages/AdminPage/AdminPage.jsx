@@ -17,6 +17,8 @@ import { Grid } from "@material-ui/core";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
 import UserService from "../../service/UserService";
 
+import AddUserAction from './AddUserAction';
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -40,6 +42,15 @@ const convertContactToListItem = contact => {
     </ListItem>
   );
 };
+
+const getCurrentActionPane = (action) => {
+  switch(action){
+    case "ADD_USER":
+      return <AddUserAction />
+    default:
+      return (<div></div>)
+  }
+}
 
 const AdminPage = observer(props => {
   const classes = useStyles();
@@ -86,7 +97,7 @@ const AdminPage = observer(props => {
         </Grid>
         <Grid item xl={6}>
           <h2>Details</h2>
-          <div>TUTAJ COŚ BĘDZIE</div>
+          {getCurrentActionPane(action)}
         </Grid>
       </Grid>
     </div>
