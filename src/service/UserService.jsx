@@ -40,6 +40,18 @@ const UserService = {
     });
   },
 
+  addUser(user) {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
+      return Promise.reject('No access token set.');
+    }
+
+    return request({
+      url: '/user/',
+      method: 'POST',
+      body: JSON.stringify(user),
+    });
+  },
+
   getUserProfile(username) {
     return request({
       url: `/users/${username}`,
@@ -68,7 +80,18 @@ const UserService = {
       url: '/user/me/conversations',
       method: 'GET',
     });
-  }
+  },
+
+  getAllConversations() {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
+      return Promise.reject('No access token set.');
+    }
+
+    return request({
+      url: '/conversation/',
+      method: 'GET',
+    });
+  },
 };
 
 export default UserService;
